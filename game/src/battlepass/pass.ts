@@ -80,7 +80,8 @@ export function grantReward(s: GameState, r: Reward): string {
 }
 
 export function claimTier(s: GameState, tier: number, track: 'free' | 'premium'): ActionResult<string> {
-  if (tier < 1 || tier > PASS_TIERS) return fail('Palier invalide');
+  if (!Number.isInteger(tier) || tier < 1 || tier > PASS_TIERS) return fail('Palier invalide');
+  if (track !== 'free' && track !== 'premium') return fail('Piste invalide');
   if (passTier(s) < tier) return fail('Palier non atteint');
   const list = track === 'free' ? s.pass.claimedFree : s.pass.claimedPremium;
   if (list.includes(tier)) return fail('Déjà récupéré');

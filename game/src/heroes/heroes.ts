@@ -17,7 +17,7 @@ export function syncHeroes(s: GameState) {
 
 export function upgradeHero(s: GameState, id: string, now: number): ActionResult {
   const st = s.heroes[id];
-  if (!st) return fail('Héros non éveillé');
+  if (!st || !HEROES.some(x => x.id === id)) return fail('Héros non éveillé');
   if (st.upgradeEndAt) return fail('Déjà en entraînement');
   if (st.level >= heroCap(citadelLevel(s))) return fail('Niveau max pour cette Citadelle');
   const c = heroUpgradeCost(id, st.level + 1);
@@ -74,6 +74,7 @@ export function unequip(s: GameState, heroId: string, eqId: string): ActionResul
 }
 export function setHeroSkin(s: GameState, heroId: string, skin: string): ActionResult {
   const st = s.heroes[heroId];
+  if (!st || !HEROES.some(x => x.id === heroId)) return fail('Héros inconnu');
   const h = hdef(heroId);
   const sk = h.skins.find(x => x.id === skin);
   if (!st || !sk) return fail('Invalide');

@@ -1,7 +1,7 @@
 // Construction, amélioration, déplacement et gestion des ouvriers.
 import type { GameState, BuildingInstance } from '../core/state';
 import { fail, ok, type ActionResult, type Cost } from '../core/types';
-import { bdef, blevel } from './defs';
+import { bdef, blevel, BUILDINGS } from './defs';
 import { canBuildMore, citadelLevel, countOf, freeBuilders, isLevelUnlocked, mods } from '../village/query';
 import { canPlaceAt, occupancy, inBounds } from '../village/grid';
 import { spend, refund, costWithMods, crystalsForTime, gain } from '../resources/economy';
@@ -29,6 +29,7 @@ export function buildTime(s: GameState, type: string, level: number): number {
 }
 
 export function placeBuilding(s: GameState, type: string, x: number, y: number, now: number): ActionResult<BuildingInstance> {
+  if (typeof type !== 'string' || !BUILDINGS[type]) return fail('Bâtiment inconnu');
   const d = bdef(type);
   if (!canBuildMore(s, type)) return fail('Limite atteinte pour ce niveau de Citadelle');
   if (!isLevelUnlocked(s, type, 1)) return fail(`Requiert la Citadelle niveau ${d.levels[0].citadel}`);

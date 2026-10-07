@@ -249,8 +249,8 @@ export class BattleSim {
       case 'ultimate': {
         const u = this.units.find(u => u.hero === c.hero && u.team === 'att' && u.alive);
         if (!u || u.ultCharge < 1) return false;
-        u.ultCharge = 0;
         this.heroUltimate(u, c.x, c.y);
+        u.ultCharge = 0; // l'ultime ne se recharge pas sur ses propres dégâts
         return true;
       }
       case 'royal': {

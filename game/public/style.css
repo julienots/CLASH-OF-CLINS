@@ -52,7 +52,7 @@ input, textarea, select { font: inherit; user-select: text; -webkit-user-select:
 .right-row { display: flex; gap: 8px; align-items: flex-end; }
 
 /* Panneaux */
-.backdrop { position: absolute; inset: 0; background: rgba(4,8,16,.55); display: flex; align-items: center; justify-content: center; animation: fade .12s ease-out; }
+.backdrop { position: absolute; inset: 0; z-index: 10; background: rgba(4,8,16,.55); display: flex; align-items: center; justify-content: center; animation: fade .12s ease-out; }
 .panel { width: min(96vw, 760px); max-height: calc(94vh - var(--safe-top)); background: var(--panel); border: 2px solid var(--line); border-radius: 20px; box-shadow: 0 20px 60px rgba(0,0,0,.6); display: flex; flex-direction: column; overflow: hidden; animation: pop .16s cubic-bezier(.2,1.4,.5,1); }
 .panel.wide { width: min(98vw, 1000px); }
 .panel-head { display: flex; align-items: center; gap: 10px; padding: 10px 12px; background: linear-gradient(#25406f, #1a2e52); border-bottom: 1px solid var(--line); }
@@ -139,9 +139,9 @@ input.field, textarea.field, select.field { width: 100%; padding: 10px 12px; bor
 .chat .m { padding: 6px 10px; border-radius: 10px; background: rgba(255,255,255,.06); font-size: 14px; }
 .chat .m.me { background: rgba(63,161,255,.18); align-self: flex-end; }
 .chat .m.sys { background: transparent; color: var(--muted); font-style: italic; font-size: 12px; text-align: center; }
-.world-map { position: relative; width: 100%; aspect-ratio: 16/10; border-radius: 14px; overflow: hidden; background: linear-gradient(160deg, #2c6e8f, #1d4f6b); }
+.world-map { position: relative; width: 100%; height: min(64vh, 58vw); background-image: radial-gradient(ellipse at 30% 60%, #6d9a4a 0 18%, transparent 19%), radial-gradient(ellipse at 65% 35%, #8a9a5a 0 22%, transparent 23%), radial-gradient(ellipse at 50% 80%, #5f8a3f 0 15%, transparent 16%); border-radius: 14px; overflow: hidden; background: linear-gradient(160deg, #2c6e8f, #1d4f6b); }
 .world-map .region { position: absolute; transform: translate(-50%, -50%); border-radius: 50%; display: grid; place-items: center; font-weight: 900; font-size: 11px; text-align: center; text-shadow: 0 1px 2px #000; border: 2px solid rgba(255,255,255,.3); }
-.world-map .region.fog { filter: grayscale(1) brightness(.4); }
+.world-map .region.fog { filter: grayscale(.8) brightness(.55); opacity: .8; }
 .world-map .site { position: absolute; transform: translate(-50%, -50%); width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-size: 18px; background: rgba(10,18,34,.85); border: 2px solid var(--gold); cursor: pointer; }
 .world-map .site.done { border-color: var(--ok); }
 .tree-branch { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; touch-action: pan-x; }

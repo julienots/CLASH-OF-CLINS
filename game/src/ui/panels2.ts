@@ -100,7 +100,7 @@ export function openGuild(app: App) {
       if (guildTab === 0) {
         const list = h('div', { class: 'list', style: { marginTop: '10px' } });
         for (const g of suggestedGuilds(s, Math.floor(now / 3600000))) list.append(h('div', { class: 'item' }, h('span', { style: { fontSize: '30px' } }, g.emblem), h('div', { class: 'grow' }, h('b', null, `${g.name} · niv. ${g.level}`), h('div', { class: 'muted' }, `${g.members}/30 membres · 🏆 min ${g.minTrophies} · ${g.open ? 'Ouverte' : 'Sur invitation'}`), h('div', { class: 'muted' }, g.desc)),
-          h('button', { class: 'btn small green', onclick: () => { if (app.act('guildJoin', { listing: g }).ok) audio.sfx('reward'); } }, 'Rejoindre')));
+          h('button', { class: 'btn small green', onclick: () => { if (app.act('guildJoin', { id: g.id }).ok) audio.sfx('reward'); } }, 'Rejoindre')));
         body.append(list);
       } else {
         let emblem = EMBLEMS[0];
@@ -298,7 +298,7 @@ export function openWorld(app: App) {
     const map = h('div', { class: 'world-map' });
     for (const r of WORLD_REGIONS) {
       const disc = regionDiscovered(s, r.id, now);
-      map.append(h('div', { class: 'region' + (disc ? '' : ' fog'), style: { left: r.x * 100 + '%', top: r.y * 100 + '%', width: '26%', height: '30%', background: `radial-gradient(circle, ${r.color}, ${r.color}55 60%, transparent 70%)` } }, disc ? r.name : '☁️ Inexploré'));
+      map.append(h('div', { class: 'region' + (disc ? '' : ' fog'), style: { left: r.x * 100 + '%', top: r.y * 100 + '%', width: '26%', height: '30%', background: `radial-gradient(circle, ${r.color}, ${r.color}55 60%, transparent 70%)` } }, disc ? r.name : `☁️ ${r.name}`));
     }
     for (const site of worldSites(s, now)) {
       if (!regionDiscovered(s, site.region, now)) continue;

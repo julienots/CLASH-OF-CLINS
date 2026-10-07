@@ -98,7 +98,7 @@ export const ACTIONS: Record<string, Handler> = {
   setCitadelSkin: (s, a) => S.setCitadelSkin(s, a.id),
   // ── Guilde / guerre ──
   guildCreate: (s, a, now) => G.createGuild(s, a.name ?? '', a.emblem ?? '', a.desc ?? '', now),
-  guildJoin: (s, a, now) => G.joinGuild(s, a.listing, now),
+  guildJoin: (s, a, now) => G.joinGuildById(s, String(a.id ?? ''), now),
   guildLeave: (s) => G.leaveGuild(s),
   guildInvite: (s, a, now) => G.invite(s, a.name ?? '', now),
   guildChat: (s, a, now) => G.sendChat(s, String(a.text ?? ''), now),
@@ -143,12 +143,21 @@ export const ACTIONS: Record<string, Handler> = {
 
 function pick(o: any, keys: string[]) { const r: any = {}; for (const k of keys) if (o?.[k] !== undefined) r[k] = o[k]; return r; }
 
+/** Erreurs internes rencontrées (surveillées par les tests longs / la télémétrie serveur). */
+export const internalErrors: string[] = [];
+
 /** Point d'entrée unique : avance le temps puis exécute l'action. */
 export function dispatch(s: GameState, name: string, args: any, now: number): ActionResult<any> {
   const h = ACTIONS[name];
   if (!h) return fail('Action inconnue : ' + name);
   advance(s, now);
-  const r = h(s, args ?? {}, now);
+  let r: ActionResult<any>;
+  try {
+    r = h(s, args && typeof args === 'object' ? args : {}, now);
+  } catch (e) {
+    internalErrors.push(`${name}: ${(e as Error).message}`);
+    r = fail('Requête invalide');
+  }
   for (const k of RES_KEYS) if (!(s.resources[k] >= 0)) s.resources[k] = 0; // garde-fou absolu
   return r;
 }

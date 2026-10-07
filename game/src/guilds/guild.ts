@@ -61,6 +61,14 @@ export function createGuild(s: GameState, name: string, emblem: string, desc: st
   return ok(s.guild);
 }
 
+/** Le client n'envoie qu'un identifiant : la fiche de guilde est recalculée ici (jamais fournie par le client). */
+export function joinGuildById(s: GameState, id: string, now: number): ActionResult<GuildState> {
+  const hour = Math.floor(now / 3600000);
+  const g = [...suggestedGuilds(s, hour), ...suggestedGuilds(s, hour - 1)].find(x => x.id === id);
+  if (!g) return fail('Guilde introuvable');
+  return joinGuild(s, g, now);
+}
+
 export function joinGuild(s: GameState, g: GuildListing, now: number): ActionResult<GuildState> {
   const req = requirePortal(s); if (req) return fail(req);
   if (s.guild) return fail('Vous êtes déjà dans une guilde');

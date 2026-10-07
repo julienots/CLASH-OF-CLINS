@@ -15,6 +15,7 @@ import { processOfflineDefenses } from '../defense/offlineDefense';
 import { PurchaseService, AndroidBillingProvider, MockBillingProvider, type BillingProvider } from '../purchases/iap';
 import { grantProduct } from '../shop/catalog';
 import { checkOnline, isOnline, serverConfigured, call } from '../networking/api';
+import { bus } from '../core/events';
 
 export interface Scene {
   name: string;
@@ -103,6 +104,7 @@ export class App {
       if (!opts.silent) { this.toast(r.error ?? 'Action impossible', 'bad'); audio.sfx('error'); this.vibrate(30); }
     } else {
       if (opts.sound) audio.sfx(opts.sound);
+      if (name === 'collect' || name === 'collectAll') bus.emit('tut', 'collect');
       this.changed();
       if (isOnline()) void call('POST', '/action', { name, args, at: this.now() }).catch(() => { /* re-synchronisé plus tard */ });
     }

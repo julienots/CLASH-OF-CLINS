@@ -41,7 +41,7 @@ export function trainUnit(s: GameState, id: string, count: number, now: number):
   if (!u) return fail('Unité inconnue');
   if (!isUnitUnlocked(s, id, now)) return fail('Unité verrouillée');
   count = Math.floor(count);
-  if (count < 1 || count > 200) return fail('Quantité invalide');
+  if (!Number.isInteger(count) || count < 1 || count > 200) return fail('Quantité invalide');
   const cap = armyCapacity(s);
   const used = housingOf(s.army.units) + queuedHousing(s);
   if (used + u.housing * count > cap) return fail('Camps pleins');

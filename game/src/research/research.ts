@@ -24,6 +24,10 @@ export function researchOption(s: GameState, kind: 'unit' | 'spell' | 'tech', id
     return { id, kind, toLevel: 1, cost: n.cost, time: Math.round(n.time * speed), labLevel: n.lab, available: !reason, reason };
   }
   const cur = researchLevel(s, id);
+  const invalid = { id, kind, toLevel: 1, cost: {}, time: 0, labLevel: 99, available: false, reason: 'Inconnu' } as ResearchOption;
+  if (kind !== 'unit' && kind !== 'spell') return invalid;
+  if (kind === 'unit' && (!UNITS[id] || UNITS[id].building === 'event')) return invalid;
+  if (kind === 'spell' && !SPELLS.some(x => x.id === id)) return invalid;
   if (kind === 'unit') {
     const u = UNITS[id];
     if (cur >= u.maxLevel) return { id, kind, toLevel: cur, cost: {}, time: 0, labLevel: 0, available: false, reason: 'Niveau max' };

@@ -25,6 +25,7 @@ export interface GenOptions {
 export interface GeneratedBase { buildings: BaseBuilding[]; formation: Formation; citadel: number }
 
 const OUTER = new Set(['gold_mine', 'sawmill', 'farm', 'quarry', 'generator', 'army_camp', 'barracks', 'laboratory', 'builder_hut', 'workshop', 'academy', 'market', 'forge', 'observatory']);
+const PRODUCERS = new Set(['gold_mine', 'sawmill', 'farm', 'quarry', 'generator']);
 const INNER = new Set(['gold_vault', 'wood_depot', 'energy_cell', 'crystal_vault', 'temple', 'guild_portal']);
 
 export function generateBase(o: GenOptions): GeneratedBase {
@@ -38,6 +39,7 @@ export function generateBase(o: GenOptions): GeneratedBase {
   const out: BaseBuilding[] = [];
   let uid = 1;
   const lvl = (type: string) => {
+    if (type === 'citadel') return cl;
     const m = maxLevelFor(type, cl);
     if (m <= 1) return Math.max(1, m);
     const pen = o.levelPenalty ?? 1;
@@ -99,14 +101,16 @@ export function generateBase(o: GenOptions): GeneratedBase {
     if (o.only && d.category === 'defense' && !o.only.includes(d.id)) continue;
     let n = maxCount(d.id, cl);
     if (d.id === 'builder_hut') n = Math.min(n, 2 + Math.floor(cl / 5));
+    if (PRODUCERS.has(d.id)) n = Math.ceil(n * 0.6); // les bases ennemies gardent de l'espace pour les défenses
     if (d.id !== 'citadel') n = Math.max(d.category === 'defense' || d.id === 'army_camp' ? Math.min(1, n) : 0, Math.round(n * fill));
     for (let i = 0; i < n; i++) {
       const ring = d.id === 'citadel' ? 0 : d.category === 'defense' ? rng.range(2, coreR + 1) : INNER.has(d.id) ? rng.range(1, coreR) : OUTER.has(d.id) ? rng.range(coreR + 3, half - 1) : rng.range(coreR, half);
       list.push({ type: d.id, ring });
     }
   }
-  // gros bâtiments d'abord
-  list.sort((a, b) => (a.type === 'citadel' ? -1 : b.type === 'citadel' ? 1 : bdef(b.type).size - bdef(a.type).size));
+  // priorité : Citadelle, défenses, stockages, militaire, puis le reste (gros bâtiments d'abord à priorité égale)
+  const prio = (t: string) => t === 'citadel' ? 0 : bdef(t).category === 'defense' ? 1 : INNER.has(t) ? 2 : bdef(t).category === 'military' ? 3 : PRODUCERS.has(t) ? 5 : 4;
+  list.sort((a, b) => prio(a.type) - prio(b.type) || bdef(b.type).size - bdef(a.type).size);
   for (const it of list) {
     const size = bdef(it.type).size;
     const pos = findSpot(occ, size, it.ring, area, rng, C);
