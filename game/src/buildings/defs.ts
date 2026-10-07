@@ -122,11 +122,11 @@ add(gen({
   id: 'citadel', name: 'Citadelle', category: 'special', size: 4, color: '#c9a227',
   desc: 'Cœur du royaume. Son niveau détermine tout ce que vous pouvez construire.',
   counts: '1@1', maxLevel: 15, unlock: 1, step: 1,
-  baseCost: { gold: 1000, wood: 1000 }, costG: 1.95, baseTime: 10, timeG: 2.3, baseHp: 1500, hpG: 1.14,
+  baseCost: { gold: 520, wood: 520 }, costG: 2.0, baseTime: 10, timeG: 2.3, baseHp: 1500, hpG: 1.14,
   extra: l => ({
     citadel: l === 1 ? 1 : l - 1,
     storage: { gold: 1000 * l, wood: 1000 * l, energy: l >= 6 ? 500 * l : 0 },
-    cost: l === 1 ? {} : { gold: geo(1000, 1.95, l), wood: geo(1000, 1.95, l), ...(l >= 8 ? { energy: geo(2000, 1.6, l - 7) } : {}) },
+    cost: l === 1 ? {} : { gold: geo(520, 2.0, l), wood: geo(520, 2.0, l), ...(l >= 8 ? { energy: geo(2000, 1.6, l - 7) } : {}) },
   }),
 }));
 add(gen({
@@ -172,13 +172,13 @@ add(gen({
   id: 'gold_mine', name: "Mine d'or", category: 'economy', size: 3, color: '#f2c94c',
   desc: "Extrait de l'or en continu. Touchez-la pour récolter.",
   counts: '2@1,3@2,4@3,5@4,6@6,7@8,8@10', maxLevel: 13, unlock: 1, step: 1,
-  baseCost: { wood: 150 }, costG: 1.8, baseTime: 10, timeG: 2.15, baseHp: 400, extra: prod('gold', 200, 500),
+  baseCost: { wood: 150 }, costG: 1.8, baseTime: 10, timeG: 2.15, baseHp: 400, extra: prod('gold', 350, 900),
 }));
 add(gen({
   id: 'sawmill', name: 'Scierie', category: 'economy', size: 3, color: '#8b5a2b',
   desc: 'Débite du bois sans relâche.',
   counts: '2@1,3@2,4@3,5@4,6@6,7@8,8@10', maxLevel: 13, unlock: 1, step: 1,
-  baseCost: { gold: 150 }, costG: 1.8, baseTime: 10, timeG: 2.15, baseHp: 400, extra: prod('wood', 200, 500),
+  baseCost: { gold: 150 }, costG: 1.8, baseTime: 10, timeG: 2.15, baseHp: 400, extra: prod('wood', 350, 900),
 }));
 add(gen({
   id: 'farm', name: 'Ferme', category: 'economy', size: 3, color: '#9ccc65',

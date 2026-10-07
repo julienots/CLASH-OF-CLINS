@@ -181,7 +181,7 @@ export function playerBase(s: GameState): BattleSetup['base'] {
 export function invasionWaves(cl: number, seed: number): Command[] {
   const rng = new Rng(seed);
   const cmds: Command[] = [];
-  const budget = 25 + cl * cl * 6;
+  const budget = 8 + cl * cl * 6;
   const waves = 3 + Math.floor(cl / 4);
   for (let w = 0; w < waves; w++) {
     const side = rng.int(0, 3);
@@ -215,12 +215,17 @@ export function invasionReward(s: GameState, destruction: number): Partial<Resou
 }
 
 /** Résultat d'une invasion : le joueur défend son propre village. */
+export const INVASION_COOLDOWN = 2 * 3600000;
+export function invasionRewardReady(s: GameState, now: number) {
+  return now - s.events.lastInvasionAt >= INVASION_COOLDOWN || (eventModifiers(now).id === 'invasion' && now - s.events.lastInvasionAt >= INVASION_COOLDOWN / 4);
+}
 export function applyInvasionResult(s: GameState, r: BattleResult, now: number) {
   const won = r.destruction < 50 && r.stars < 2;
-  const reward = won ? gain(s, invasionReward(s, r.destruction)) : {};
+  const rewarded = won && invasionRewardReady(s, now);
+  const reward = rewarded ? gain(s, invasionReward(s, r.destruction)) : {};
   if (won) { s.player.stats.defensesWon++; s.player.stats.invasionsRepelled++; progressMission(s, 'invasion', 1); addPassXp(s, 120); }
   else s.player.stats.defensesLost++;
-  s.events.lastInvasionAt = now;
+  if (rewarded || !won) s.events.lastInvasionAt = now;
   s.log.unshift({ at: now, attacker: 'Horde sauvage', stars: r.stars, destruction: r.destruction, lost: {}, trophies: 0, kind: 'invasion' });
   s.log = s.log.slice(0, 30);
   return { won, reward };

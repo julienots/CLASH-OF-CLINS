@@ -23,7 +23,7 @@ export function newGame(now: number, name = 'Souverain', seed?: number): GameSta
       tutorialStep: 0, tutorialDone: false, leagueId: 0, shieldUntil: now + 3 * 86400000,
       stats: { attacksWon: 0, attacksLost: 0, defensesWon: 0, defensesLost: 0, unitsTrained: 0, buildingsBuilt: 0, goldLooted: 0, woodLooted: 0, starsTotal: 0, spellsCast: 0, invasionsRepelled: 0, donations: 0 },
     },
-    resources: { gold: 1000, wood: 1000, energy: 0, crystals: 250 },
+    resources: { gold: 1500, wood: 1500, energy: 0, crystals: 250 },
     buildings: [],
     nextUid: 1,
     army: { units: { soldier: 10 }, spells: {}, queue: [], spellQueue: [], guildTroops: {} },
@@ -45,7 +45,7 @@ export function newGame(now: number, name = 'Souverain', seed?: number): GameSta
   };
   const c = MAP_SIZE / 2;
   const put = (type: string, x: number, y: number, level = 1) => {
-    s.buildings.push({ uid: s.nextUid++, type, level, x, y, rot: 0, ...(bdef(type).levels[0].produces ? { stored: {} } : {}) });
+    s.buildings.push({ uid: s.nextUid++, type, level, x, y, rot: 0, ...(bdef(type).levels[0].produces ? { stored: { [bdef(type).levels[0].produces![0].res]: 180 } } : {}) });
   };
   put('citadel', c - 2, c - 2);
   put('builder_hut', c - 7, c - 7);
@@ -55,6 +55,7 @@ export function newGame(now: number, name = 'Souverain', seed?: number): GameSta
   put('gold_vault', c - 1, c + 4);
   put('wood_depot', c - 1, c - 7);
   put('army_camp', c + 5, c + 5);
+  put('barracks', c - 11, c - 1);
   put('cannon', c - 6, c + 4);
   // décor naturel
   for (const [x, y] of [[c - 12, c - 10], [c + 11, c - 11], [c - 11, c + 10], [c + 10, c + 11], [c + 12, c + 2]]) put('deco_pine', x, y);

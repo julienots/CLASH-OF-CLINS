@@ -255,7 +255,7 @@ export class BattleSim {
       }
       case 'royal': {
         if (this.setup.mode !== 'invasion' || this.royalReadyAt > this.tick) return false;
-        this.royalReadyAt = this.tick + 8 * TICKS_PER_SEC;
+        this.royalReadyAt = this.tick + 6 * TICKS_PER_SEC;
         this.events.push({ e: 'spell', spell: 'lightning', x: c.x, y: c.y, r: 2.5 });
         for (const u of this.units) if (u.alive && u.team === 'att' && (u.x - c.x) ** 2 + (u.y - c.y) ** 2 <= 2.5 * 2.5) this.damageUnit(u, 250, null);
         return true;
