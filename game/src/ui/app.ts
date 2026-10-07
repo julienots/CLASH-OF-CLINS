@@ -14,7 +14,7 @@ import { syncSeason } from '../battlepass/pass';
 import { processOfflineDefenses } from '../defense/offlineDefense';
 import { PurchaseService, AndroidBillingProvider, MockBillingProvider, type BillingProvider } from '../purchases/iap';
 import { grantProduct } from '../shop/catalog';
-import { checkOnline, isOnline, serverConfigured, call } from '../networking/api';
+import { checkOnline, isOnline, serverConfigured, call, setSessionToken } from '../networking/api';
 import { bus } from '../core/events';
 
 export interface Scene {
@@ -106,7 +106,9 @@ export class App {
       if (opts.sound) audio.sfx(opts.sound);
       if (name === 'collect' || name === 'collectAll') bus.emit('tut', 'collect');
       this.changed();
-      if (isOnline()) void call('POST', '/action', { name, args, at: this.now() }).catch(() => { /* re-synchronisé plus tard */ });
+      if (isOnline()) void call<{ ok: boolean; error?: string; state?: GameState }>('POST', '/action', { name, args, at: this.now() })
+        .then(sr => { if (!sr.ok && sr.state) { this.s = sr.state; this.changed(); this.toast('Synchronisé avec le serveur', 'bad'); } })
+        .catch(() => { /* re-synchronisé à la prochaine connexion */ });
     }
     return r;
   }
@@ -199,8 +201,21 @@ export class App {
     this.scene?.render(dt);
   }
 
+  /** Connexion au serveur autoritaire (si configuré) : l'état du serveur fait foi. */
   async connect() {
     if (!serverConfigured()) return;
-    await checkOnline(true);
+    if (!(await checkOnline(true))) { this.toast('Hors-ligne : progression locale, synchronisée plus tard'); return; }
+    try {
+      let device = '';
+      try { device = localStorage.getItem('kingdoms.device') ?? ''; if (!device) { device = 'd' + Math.random().toString(36).slice(2) + Date.now().toString(36); localStorage.setItem('kingdoms.device', device); } } catch { device = 'd' + Date.now(); }
+      const auth = await call<{ token: string; state: GameState }>('POST', '/auth/guest', { deviceId: device, name: this.s.player.name });
+      setSessionToken(auth.token);
+      const st = await call<{ state: GameState }>('GET', '/state');
+      this.s = st.state;
+      this.changed();
+      this.save(true);
+      await this.purchases.retryPending(this.s.shop.pendingTokens);
+      this.toast('Connecté au serveur 🟢', 'good');
+    } catch { this.toast('Serveur injoignable : mode hors-ligne', 'bad'); }
   }
 }

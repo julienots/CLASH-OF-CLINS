@@ -9,7 +9,7 @@
     "noFallthroughCasesInSwitch": true,
     "skipLibCheck": true,
     "isolatedModules": true,
-    "types": []
+    "types": ["node"]
   },
   "include": ["game/src", "game/tests", "server/src"]
 }

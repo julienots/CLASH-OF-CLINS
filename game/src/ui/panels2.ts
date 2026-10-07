@@ -37,7 +37,7 @@ export function openAttack(app: App) {
     body.append(h('div', { class: 'item' }, h('div', { class: 'grow' }, h('b', null, `Armée prête : ${army} places`), h('div', { class: 'muted' }, `${Object.keys(s.heroes).length} héros · ${Object.values(s.army.spells).reduce((a, b) => a + b, 0)} sorts`)), army === 0 ? h('span', { class: 'chip', style: { color: '#ff9b9b' } }, 'Entraînez des troupes !') : null));
     const card = (icon: string, title: string, desc: string, btn: HTMLElement) => h('div', { class: 'item', style: { padding: '12px' } }, h('span', { style: { fontSize: '34px' } }, icon), h('div', { class: 'grow' }, h('b', null, title), h('div', { class: 'muted' }, desc)), btn);
     body.append(h('div', { class: 'list', style: { marginTop: '10px' } },
-      card('⚔️', 'Raid multijoueur', 'Trouvez un seigneur à piller. Gagnez du butin et des trophées.', h('button', { class: 'btn gold', 'data-btn': 'Raid', onclick: () => { ph.close(); openRaidSearch(app, (Math.random() * 2 ** 31) >>> 0); } }, 'Chercher')),
+      card('⚔️', 'Raid multijoueur', 'Trouvez un seigneur à piller. Gagnez du butin et des trophées.', h('button', { class: 'btn gold', 'data-btn': 'Raid', onclick: async () => { ph.close(); openRaidSearch(app, await raidSeed()); } }, 'Chercher')),
       card('🗺️', 'Campagne', `${Object.values(s.campaign.stars).reduce((a, b) => a + b, 0)}/90 ★ · 30 niveaux dans 6 régions.`, h('button', { class: 'btn green', 'data-btn': 'Campagne', onclick: () => { ph.close(); openCampaign(app); } }, 'Jouer')),
       card('🛡️', 'Défendre le village', invasionRewardReady(s, now) ? `Repoussez une horde de monstres. Récompense : ${Object.entries(invasionReward(s, 0)).map(([k, v]) => RES_ICON[k as ResKey] + fmt(v as number)).join(' ')}` : 'Entraînement défensif (récompense en recharge).', h('button', { class: 'btn red', 'data-btn': 'Défendre', onclick: () => { ph.close(); app.nav.invasion(); } }, 'Défendre')),
       s.war?.phase === 'battle' ? card('🏳️', 'Guerre de guilde', `${s.war.attacksLeft} attaque(s) restante(s) contre ${s.war.enemyName}.`, h('button', { class: 'btn purple', onclick: () => { ph.close(); openWar(app); } }, 'Guerre')) : null,
@@ -51,6 +51,12 @@ function opponentPreview(app: App, opp: Opponent, body: HTMLElement) {
   if (loot.gold || loot.wood || loot.energy) body.append(h('div', { class: 'section-title' }, 'Butin disponible'), lootLine(loot));
 }
 
+/** En ligne, la graine de l'adversaire est attribuée par le serveur (anti-triche). */
+async function raidSeed(): Promise<number> {
+  if (serverConfigured() && isOnline()) { try { return (await call<{ seed: number }>('POST', '/matchmaking/raid')).seed; } catch { /* repli local */ } }
+  return (Math.random() * 2 ** 31) >>> 0;
+}
+
 export function openRaidSearch(app: App, seed: number) {
   const s = app.s;
   const opp = findOpponent(s, seed, Date.now());
@@ -60,7 +66,7 @@ export function openRaidSearch(app: App, seed: number) {
     body.append(h('div', { class: 'row', style: { justifyContent: 'flex-end', marginTop: '12px' } },
       h('button', { class: 'btn ghost', onclick: () => {
         if (s.resources.gold < nextCost) { app.toast('Or insuffisant', 'bad'); return; }
-        s.resources.gold -= nextCost; app.changed(); ph.close(); openRaidSearch(app, (seed * 1103515245 + 12345) >>> 0);
+        s.resources.gold -= nextCost; app.changed(); ph.close(); void raidSeed().then(sd => openRaidSearch(app, sd));
       } }, `Suivant · 🪙 ${fmt(nextCost)}`),
       h('button', { class: 'btn gold', 'data-btn': 'Lancer', onclick: () => { ph.close(); app.nav.battle(opp, { kind: 'raid', seed }); } }, '⚔️ Attaquer')));
   });

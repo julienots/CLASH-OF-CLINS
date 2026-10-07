@@ -7,3 +7,4 @@ android/keystore/*.properties
 test-results/
 *.log
 .DS_Store
+server-data/
