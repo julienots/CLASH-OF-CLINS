@@ -1,0 +1,9 @@
+node_modules/
+build/
+game/dist/
+android/build/
+android/keystore/*.jks
+android/keystore/*.properties
+test-results/
+*.log
+.DS_Store
