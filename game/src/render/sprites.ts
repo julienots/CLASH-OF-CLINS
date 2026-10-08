@@ -362,7 +362,12 @@ function drawBuilding(g: G, type: string, level: number, s: number, cx: number, 
       const legs: [number, number][] = [[-0.7, -0.7], [0.7, -0.7], [-0.7, 0.7], [0.7, 0.7]];
       for (const [u, v] of legs) { const [px, py] = g.pt(cx, cy, u, v); g.prism(px, py, 0.28, 0.28, h, L >= 8 ? '#9e9e9e' : '#8d6e63', 4); }
       g.prism(cx, cy, 1.9, 1.9, 8, L >= 8 ? '#bdbdbd' : '#a1887f', h);
-      g.pyramid(cx, cy, 1.7, 1.7, h + 30, 18, L >= 8 ? '#455a64' : '#6d4c41');
+      // cabine des archers (créneaux + meurtrières)
+      const cab = L >= 8 ? '#cfd8dc' : '#bc8f62';
+      g.prism(cx, cy, 1.5, 1.5, 22, cab, h + 8);
+      g.poly([g.pt(cx, cy, -0.25, 0.76, h + 16), g.pt(cx, cy, 0.25, 0.76, h + 16), g.pt(cx, cy, 0.25, 0.76, h + 24), g.pt(cx, cy, -0.25, 0.76, h + 24)], '#3e2723');
+      g.poly([g.pt(cx, cy, 0.76, -0.25, h + 16), g.pt(cx, cy, 0.76, 0.25, h + 16), g.pt(cx, cy, 0.76, 0.25, h + 24), g.pt(cx, cy, 0.76, -0.25, h + 24)], '#3e2723');
+      g.pyramid(cx, cy, 1.8, 1.8, h + 30, 20, L >= 8 ? '#455a64' : '#8d3b2a');
       g.prism(cx, cy, 1.95, 0.1, 3, trim, h + 6);
       break;
     }
@@ -405,6 +410,8 @@ function drawBuilding(g: G, type: string, level: number, s: number, cx: number, 
     case 'deco_dragon_skull': g.circle(cx, cy - 12, 14, '#efebe9', '#8d6e63'); g.circle(cx - 5, cy - 14, 3, '#3e2723'); g.circle(cx + 5, cy - 14, 3, '#3e2723'); g.poly([[cx - 14, cy - 20], [cx - 24, cy - 36], [cx - 10, cy - 24]], '#d7ccc8'); g.poly([[cx + 14, cy - 20], [cx + 24, cy - 36], [cx + 10, cy - 24]], '#d7ccc8'); break;
     case 'deco_pumpkin': g.circle(cx, cy - 8, 9, '#ff9800', '#e65100'); g.poly([[cx - 3, cy - 10], [cx, cy - 6], [cx + 3, cy - 10]], '#ffe082'); break;
     case 'deco_snowman': g.circle(cx, cy - 8, 9, '#fff', '#b0bec5'); g.circle(cx, cy - 22, 6, '#fff', '#b0bec5'); g.poly([[cx, cy - 22], [cx + 7, cy - 21], [cx, cy - 20]], '#ff7043'); break;
+    case 'deco_hero_statue': g.prism(cx, cy, 1.3, 1.3, 12, '#9e9e9e'); g.cylinder(cx, cy, 0.35, 36, '#cfd8dc', 12); g.circle(cx, cy - 54, 8, '#cfd8dc', '#78909c'); g.flag(cx + 10, cy - 40, 26, '#90a4ae'); break;
+    case 'deco_monument': g.prism(cx, cy, 2.4, 2.4, 10, '#bdbdbd'); g.prism(cx, cy, 1.6, 1.6, 14, '#e0e0e0', 10); g.prism(cx, cy, 0.6, 0.6, 70, '#ffd54f', 24); g.pyramid(cx, cy, 0.6, 0.6, 94, 16, '#ffb300'); break;
     case 'deco_throne': g.prism(cx, cy, 1.0, 1.0, 10, '#ffd54f'); g.prism(...(g.pt(cx, cy, 0, -0.4) as [number, number]), 1.0, 0.2, 36, '#ffca28', 10); g.circle(cx, cy - 50, 5, '#e53935'); break;
     default:
       g.prism(cx, cy, s - 0.3, s - 0.3, 20, d.color);

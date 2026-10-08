@@ -15,7 +15,7 @@ export interface RBuilding {
   uid: number; type: string; level: number; x: number; y: number; size: number;
   hpFrac?: number; destroyed?: boolean; constructing?: boolean; progress?: number; skin?: string;
   aim?: number; recoil?: number; selected?: boolean; ghost?: 'ok' | 'bad'; frozen?: boolean; stunned?: boolean;
-  bubble?: string; label?: string; hidden?: boolean; range?: number; minRange?: number; alpha?: number;
+  bubble?: string; label?: string; hidden?: boolean; range?: number; minRange?: number; alpha?: number; rot?: number;
 }
 export interface RUnit { id: number; type: string; x: number; y: number; face: number; atk: number; team: 'att' | 'def'; hp: number; hero?: string; skinColor?: string; skinAccent?: string; frozen?: boolean; invisible?: boolean; flying?: boolean; shield?: boolean; raged?: boolean }
 export interface RShot { fx: number; fy: number; tx: number; ty: number; kind: string; t: number; dur: number; arc: number }
@@ -289,7 +289,8 @@ export class Renderer {
     } else {
       if (QUALITY[this.quality].shadows && b.size > 1) shadowEllipse(c, center.x + 8, center.y + 2, b.size * TW * 0.42, b.size * TH * 0.42, 0.18);
       const spr = buildingSprite(b.type, Math.max(1, b.level), { skin: b.skin, construction: b.constructing });
-      c.drawImage(spr, top.x - b.size * TW / 2 - 4, top.y - HEADROOM);
+      if (b.rot) { c.save(); c.translate(top.x, 0); c.scale(-1, 1); c.drawImage(spr, -b.size * TW / 2 - 4, top.y - HEADROOM); c.restore(); }
+      else c.drawImage(spr, top.x - b.size * TW / 2 - 4, top.y - HEADROOM);
       this.drawCalls++;
       if (b.aim !== undefined || ['watchtower', 'arcane_spire', 'brazier', 'storm_tower'].includes(b.type)) {
         if (bdef(b.type).category === 'defense') drawTurret(c, b.type, center.x, center.y, b.aim ?? 0.8, b.level, b.recoil ?? 0, this.time);

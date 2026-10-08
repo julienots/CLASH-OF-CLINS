@@ -329,7 +329,7 @@ export class VillageScene implements Scene {
     for (const b of s.buildings) {
       const d = bdef(b.type);
       const pos = this.edit.get(b.uid) ?? b;
-      const rb: RBuilding = { uid: b.uid, type: b.type, level: Math.max(1, b.level), x: pos.x, y: pos.y, size: d.size, skin: b.type === 'citadel' ? s.inventory.citadelSkin : undefined };
+      const rb: RBuilding = { uid: b.uid, type: b.type, level: Math.max(1, b.level), x: pos.x, y: pos.y, size: d.size, rot: b.rot, skin: b.type === 'citadel' ? s.inventory.citadelSkin : undefined };
       if (b.build) { rb.constructing = true; rb.progress = Math.min(1, (now - b.build.startAt) / Math.max(1, b.build.endAt - b.build.startAt)); rb.label = fmtTime((b.build.endAt - now) / 1000); if (b.level === 0) rb.level = 1; }
       if (b.stored) {
         const cap = producerCapacity(s, b);

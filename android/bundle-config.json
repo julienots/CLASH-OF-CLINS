@@ -1,0 +1,7 @@
+{
+  "optimizations": {
+    "splitsConfig": { "splitDimension": [ { "value": "LANGUAGE", "negate": true }, { "value": "ABI", "negate": true } ] },
+    "uncompressNativeLibraries": { "enabled": true }
+  },
+  "compression": { "uncompressedGlob": ["assets/www/**.png"] }
+}

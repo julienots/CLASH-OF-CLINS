@@ -181,7 +181,7 @@ export function playerBase(s: GameState): BattleSetup['base'] {
 export function invasionWaves(cl: number, seed: number): Command[] {
   const rng = new Rng(seed);
   const cmds: Command[] = [];
-  const budget = 8 + cl * cl * 6;
+  const budget = 6 + cl * cl * Math.min(6, 2 + cl * 0.35);
   const waves = 3 + Math.floor(cl / 4);
   for (let w = 0; w < waves; w++) {
     const side = rng.int(0, 3);

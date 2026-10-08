@@ -58,6 +58,8 @@ export function citadelUnlocks(cl: number): string[] {
     const acA = maxLevelFor('academy', cl - 1), acB = maxLevelFor('academy', cl);
     for (const sp of SPELLS) if (sp.academy > acA && sp.academy <= acB) out.push(`Sort : ${sp.name}`);
     for (const h of HEROES) if (h.citadel === cl) out.push(`Héros : ${h.name}`);
+    if (cl === 13) out.push('La Citadelle riposte : Couronne de garde (éclairs en chaîne)');
+    if (cl === 15) out.push('Titre de Souverain légendaire · Couronne de garde niveau max');
     const wA = maxLevelFor('workshop', cl - 1), wB = maxLevelFor('workshop', cl);
     for (const u of TRAINABLE) if (u.building === 'workshop' && u.unlockLevel > wA && u.unlockLevel <= wB) out.push(`Engin : ${u.name}`);
   }

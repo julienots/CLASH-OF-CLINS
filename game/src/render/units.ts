@@ -154,7 +154,7 @@ export function drawTurret(c: Ctx, type: string, x: number, y: number, aim: numb
     }
     case 'watchtower': {
       const h = 50 + level * 2.2;
-      figureArcher(c, x, y - h - 6, dx);
+      figureArcher(c, x + dx * 4, y - h - 26, dx);
       break;
     }
     case 'arcane_spire': {

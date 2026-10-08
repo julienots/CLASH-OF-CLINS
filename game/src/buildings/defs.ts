@@ -126,6 +126,8 @@ add(gen({
   extra: l => ({
     citadel: l === 1 ? 1 : l - 1,
     storage: { gold: 1000 * l, wood: 1000 * l, energy: l >= 6 ? 500 * l : 0 },
+    // à partir du niveau 13, la Citadelle elle-même riposte (Couronne de garde)
+    ...(l >= 13 ? { defense: { range: 8, damage: 160 * (l - 12), interval: 1.3, chain: 2, targets: 'both' as const, projectile: 'arcane' as const, projSpeed: 0 } } : {}),
     cost: l === 1 ? {} : { gold: geo(520, 2.0, l), wood: geo(520, 2.0, l), ...(l >= 8 ? { energy: geo(2000, 1.6, l - 7) } : {}) },
   }),
 }));
@@ -318,14 +320,14 @@ add(gen({
 add(gen({
   id: 'brazier', name: 'Brasier', category: 'defense', size: 2, color: '#ff5722',
   desc: 'Un rayon de feu qui s\'intensifie tant qu\'il reste sur la même cible.',
-  counts: '1@10,2@12', maxLevel: 6, unlock: 10, step: 1,
+  counts: '1@10,2@12,3@15', maxLevel: 6, unlock: 10, step: 1,
   baseCost: { gold: 1500000, energy: 20000 }, costG: 1.3, baseTime: 28800, timeG: 1.2, baseHp: 1800,
   extra: def({ range: 9, damage: 18, interval: 0.25, ramp: 12, targets: 'both', projectile: 'beam', projSpeed: 0, priority: 'heroes' }),
 }));
 add(gen({
   id: 'storm_tower', name: 'Tour Tempête', category: 'defense', size: 3, color: '#29b6f6',
   desc: 'Frappe plusieurs ennemis à la fois avec la foudre.',
-  counts: '1@12,2@14', maxLevel: 4, unlock: 12, step: 1,
+  counts: '1@12,2@14,3@15', maxLevel: 4, unlock: 12, step: 1,
   baseCost: { gold: 4000000, energy: 60000 }, costG: 1.25, baseTime: 36000, timeG: 1.15, baseHp: 3500,
   extra: def({ range: 9, damage: 70, interval: 1.6, multi: 4, targets: 'both', projectile: 'lightning', projSpeed: 0 }),
 }));
@@ -362,7 +364,7 @@ add(gen({
 add(gen({
   id: 'ice_trap', name: 'Piège de givre', category: 'trap', size: 1, color: '#80deea', hidden: true,
   desc: 'Gèle les ennemis proches pendant quelques secondes.',
-  counts: '1@7,2@10', maxLevel: 5, unlock: 7, step: 2,
+  counts: '1@7,2@10,3@13', maxLevel: 5, unlock: 7, step: 2,
   baseCost: { gold: 40000 }, costG: 2, baseTime: 0, timeG: 1, baseHp: 1,
   extra: l => ({ trap: { trigger: 1.5, damage: 10 * l, radius: 3, targets: 'both', effect: 'freeze', effectValue: 2 + l * 0.6 } }),
 }));
@@ -400,6 +402,8 @@ deco('deco_dragon_skull', 'Crâne de dragon', '#efebe9', 2, 0, 400, 1);
 deco('deco_pumpkin', 'Lanterne-citrouille', '#ff9800', 1, 0, 60, 1);
 deco('deco_snowman', 'Bonhomme de neige', '#ffffff', 1, 0, 60, 1);
 deco('deco_throne', 'Trône de saison', '#ffd54f', 2, 0, 0, 1); // récompense Royal Pass
+deco('deco_hero_statue', 'Statue héroïque', '#cfd8dc', 2, 2000000, 0, 13);
+deco('deco_monument', 'Monument du Roi', '#ffd54f', 3, 5000000, 0, 15);
 
 export const BUILDINGS: Record<string, BuildingDef> = Object.fromEntries(D.map(d => [d.id, d]));
 export const BUILDING_LIST = D;

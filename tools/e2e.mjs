@@ -137,6 +137,22 @@ const cr = (await state()).res.crystals;
 await page.evaluate(() => window.kingdoms.purchases.buy('crystals_small'));
 const cr2 = (await state()).res.crystals;
 ok(cr2 === cr + 120, `achat test validé : 💎 ${cr} → ${cr2}`);
+// 10. Environnement Android simulé : mêmes ponts que MainActivity/BillingBridge (sans bibliothèque Billing)
+const android = await browser.newPage({ viewport: { width: 800, height: 360 }, deviceScaleFactor: 3 });
+android.on('pageerror', e => errors.push('ANDROID PAGEERROR ' + e.message));
+await android.addInitScript(() => {
+  let file = '';
+  window.KingdomsNative = { save: d => { file = d; window.__nativeSaves = (window.__nativeSaves || 0) + 1; }, load: () => file, vibrate: () => {}, isRelease: () => true, share: () => {}, exit: () => {} };
+  window.KingdomsBilling = { call: (m, a, id) => setTimeout(() => window.__kbCb[id](JSON.stringify(m === 'available' ? { data: false } : { error: 'unavailable', message: 'non intégré' })), 5) };
+});
+await android.goto(url);
+await android.waitForTimeout(1200);
+const andr = await android.evaluate(async () => { const k = window.kingdoms; k.save(true); const r = await k.purchases.buy('crystals_small'); return { release: k.release, saves: window.__nativeSaves, buy: r }; });
+ok(andr.release === true, 'build release détecté via le pont natif');
+ok(andr.saves > 0, 'sauvegarde écrite dans le fichier natif');
+ok(!andr.buy.ok && andr.buy.code === 'unavailable', 'sans Play Billing : achat refusé proprement (' + andr.buy.error + ')');
+await android.screenshot({ path: `${shots}/${String(++step).padStart(2, '0')}-android-sim.png` });
+await android.close();
 const fps = await page.evaluate(() => window.kingdoms.r.fps);
 console.log('FPS mesurés (swiftshader headless) :', Math.round(fps));
 await browser.close();

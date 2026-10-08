@@ -13,6 +13,7 @@
     "test:e2e": "node tools/e2e.mjs",
     "server": "node tools/run-server.mjs",
     "android": "node tools/build-web.mjs && bash android/build.sh",
+    "test:all": "npm run typecheck && npm test && npm run test:long && npm run build && npm run test:e2e",
     "icons": "node tools/gen-icons.mjs"
   },
   "devDependencies": {

@@ -7,6 +7,8 @@ import { openOfflineReport } from './ui/panels';
 import { configureServer } from './networking/api';
 import { citadelLevel } from './village/query';
 import { MAP_SIZE } from './core/state';
+import { devVillage } from './debug/cheats';
+import { botArmy } from './combat/ai';
 
 declare const __SERVER_URL__: string;
 
@@ -18,6 +20,10 @@ function boot() {
   try { if (typeof __SERVER_URL__ === 'string' && __SERVER_URL__) configureServer({ baseUrl: __SERVER_URL__ }); } catch { /* */ }
   const app = new App(canvas, ui);
   (window as any).kingdoms = app; // accès debug / tests e2e
+  if (!app.release) (window as any).kingdomsDebug = {
+    /** Remplace la partie par un village complet du niveau de Citadelle donné (outil de test). */
+    village(cl: number) { app.s = devVillage(cl, Date.now(), cl); app.s.player.tutorialDone = true; app.s.army.units = botArmy(cl, 1).units; app.s.army.spells = botArmy(cl, 1).spells; app.save(true); app.nav.village(); },
+  };
   const { attacks } = app.load(Date.now());
   if (bar) bar.style.width = '80%';
   const village = () => {
